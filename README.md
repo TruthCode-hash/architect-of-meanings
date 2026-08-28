@@ -102,6 +102,6 @@ Your API key is stored only in your browser (localStorage) and is not transferre
 
 - `server.js` — local web server.
 - `public/index.html` — application interface.
-- `bible-ru.json` — Bible text.
+- `bible-en.json` — Bible text.
 - `package.json` — dependency list.
 - `README.md` — these instructions.

@@ -1,0 +1,833 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect of Meanings — RHEMA & Symphony</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7f6;
+            color: #333;
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 15px;
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark-mode { background: #121212; color: #e0e0e0; }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            position: relative;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark-mode .card { background: #1e1e1e; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: #2c3e50; transition: color 0.3s; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 { color: #ffffff; }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; margin-bottom: 20px; }
+        h3 { font-size: 1.4rem; margin-top: 0; }
+        .section-title { color: #2c3e50; text-align: center; margin-bottom: 20px; transition: color 0.3s; }
+        body.dark-mode .section-title { color: #ffffff; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        body.dark-mode .tabs { border-bottom-color: #333; }
+        .tab-btn {
+            flex: 1; padding: 12px 16px; border: none; background: #f0f0f0; cursor: pointer;
+            border-radius: 8px 8px 0 0; font-weight: 600; min-width: 110px; font-size: 15px;
+            transition: all 0.3s ease; white-space: nowrap; color: inherit;
+        }
+        body.dark-mode .tab-btn { background: #2a2a2a; color: #ccc; }
+        .tab-btn:hover { background: #e0e0e0; }
+        body.dark-mode .tab-btn:hover { background: #3a3a3a; }
+        .tab-btn.active { background: #2c3e50; color: white; border-radius: 8px 8px 0 0; }
+        body.dark-mode .tab-btn.active { background: #3b4a5a; color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        select, textarea, input {
+            width: 100%; padding: 14px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 8px;
+            font-size: 16px; background: white; transition: all 0.3s; font-family: 'Inter', sans-serif; color: inherit;
+        }
+        body.dark-mode select, body.dark-mode textarea, body.dark-mode input { background: #2a2a2a; border-color: #444; color: #e0e0e0; }
+        select:focus, textarea:focus, input:focus { border-color: #27ae60; outline: none; box-shadow: 0 0 0 3px rgba(39,174,96,0.1); }
+
+        .preview-box { background: #eef2f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-style: italic; display: none; }
+        body.dark-mode .preview-box { background: #2c2c2c; }
+
+        button.submit-btn {
+            width: 100%; padding: 16px; background: #27ae60; color: white; border: none; border-radius: 8px;
+            font-size: 18px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: all 0.3s;
+        }
+        button.submit-btn:hover { background: #219150; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(39,174,96,0.3); }
+
+        #output { margin-top: 30px; padding: 25px; background: #f9f9f9; border-left: 5px solid #27ae60; border-radius: 8px; white-space: pre-wrap; font-size: 17px; line-height: 1.7; }
+        body.dark-mode #output { background: #2c2c2c; }
+
+        .search-result-item { margin-bottom: 15px; padding: 15px; border-bottom: 1px solid #eee; background: #fafafa; border-radius: 8px; }
+        body.dark-mode .search-result-item { background: #2a2a2a; border-bottom-color: #333; }
+        .search-ref { font-weight: bold; color: #2c3e50; }
+        body.dark-mode .search-ref { color: #fff; }
+        #searchResults { margin-top: 20px; max-height: 500px; overflow-y: auto; }
+        mark { background-color: #ffe066; padding: 0 2px; border-radius: 2px; }
+        body.dark-mode mark { background-color: #f1c40f; color: #000; }
+
+        .model-selector { margin-bottom: 20px; padding: 20px; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; }
+        body.dark-mode .model-selector { background: #2a2a2a; border-color: #444; }
+        .model-selector select { margin: 5px 0 0 0; }
+
+        .disclaimer { font-size: 13px; color: #888; text-align: center; margin-top: 12px; font-style: italic; }
+
+        #freedom-tab .manifest { background: #1a2a3a; color: #f4f7f6; padding: 30px; border-radius: 12px; line-height: 1.8; font-size: 16px; border-left: 5px solid #27ae60; }
+        #freedom-tab .manifest .title { text-align: center; font-size: 20px; font-weight: bold; color: #27ae60; margin-bottom: 25px; border-bottom: 1px solid #3a4a5a; padding-bottom: 20px; font-family: 'Playfair Display', serif; }
+        #freedom-tab .manifest p { margin-bottom: 15px; }
+        #freedom-tab .manifest .footer { margin-top: 25px; text-align: center; border-top: 1px solid #3a4a5a; padding-top: 20px; font-style: italic; color: #aaa; }
+
+        #guide-tab .guide-block { background: #f9f9f9; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        body.dark-mode #guide-tab .guide-block { background: #2a2a2a; }
+        #guide-tab .guide-block h3 { margin-top: 0; }
+        #guide-tab .guide-block ul { padding-left: 20px; }
+
+        /* Переключатель языка и темы */
+        .theme-toggle { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: inherit; }
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 5px;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        body.dark-mode .lang-switch { background: #2a2a2a; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .lang-switch button { background: none; border: none; cursor: pointer; font-weight: bold; padding: 5px 10px; color: #555; }
+        body.dark-mode .lang-switch button { color: #ccc; }
+        .lang-switch button.active { color: #27ae60; text-decoration: underline; }
+
+        .action-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 28px; line-height: 1; color: inherit; }
+
+        .history-item { background: #f9f9f9; border-left: 4px solid #3498db; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+        body.dark-mode .history-item { background: #2c2c2c; }
+        .history-item .meta { font-size: 12px; color: #888; margin-bottom: 8px; }
+        .history-item .content { white-space: pre-wrap; font-size: 14px; }
+
+        body.dark-mode .info-block { background: #2c2c2c !important; color: #e0e0e0; border-left-color: #27ae60; }
+        body.dark-mode .info-block b { color: #ffffff; }
+        body.dark-mode .api-key-block { background: #2c2c2c !important; border-color: #444 !important; color: #e0e0e0; }
+        body.dark-mode .api-key-block label, body.dark-mode .api-key-block small, body.dark-mode .api-key-block a { color: #ccc !important; }
+
+        @media (max-width: 768px) {
+            body { margin: 10px; padding: 5px; }
+            .card { padding: 70px 20px 20px; border-radius: 10px; }
+            h1 { font-size: 1.8rem; margin-bottom: 20px; margin-top: 0; }
+            .tabs { flex-direction: column; gap: 8px; flex-wrap: nowrap; overflow-x: visible; padding-bottom: 0; border-bottom: none; }
+            .tab-btn { width: 100%; flex: 1 0 auto; min-width: auto; padding: 14px 16px; font-size: 15px; white-space: normal; border-radius: 8px; text-align: center; }
+            .tab-btn.active { border-radius: 8px; }
+            select, textarea, input { padding: 12px; font-size: 15px; }
+            button.submit-btn { padding: 14px; font-size: 16px; }
+            #freedom-tab .manifest { padding: 20px; font-size: 15px; }
+            #guide-tab .guide-block { padding: 18px; }
+            .lang-switch { top: 10px; left: 10px; }
+            .theme-toggle { top: 10px; right: 10px; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.5rem; }
+            .card { padding: 60px 12px 12px; }
+            .tab-btn { padding: 8px 10px; font-size: 12px; }
+            button.submit-btn { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <div class="lang-switch">
+        <button id="lang-ru" class="active" onclick="setLanguage('ru')">RU</button>
+        <button id="lang-en" onclick="setLanguage('en')">EN</button>
+    </div>
+
+    <h1 id="title">Архитектор Смыслов: Поиск Рема</h1>
+    <div class="info-block" style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60; font-size: 15px; line-height: 1.5;">
+        <b id="what_is_rema_title">📖 Что такое Рема?</b><br>
+        <span id="what_is_rema_text">В Писании есть два вида Слова: <b>Логос</b> и <b>Рема</b> (Живое Слово, которое Отцом шепчется лично тебе в твою конкретную жизненную боль).<br>Этот инструмент создан, чтобы помочь тебе очистить Слово от догм и услышать твою личную Рему.</span>
+    </div>
+
+    <div class="model-selector">
+        <label for="modelSelect" style="font-weight: bold; display: block;" id="model_select_label">⚙️ Режим интеллекта (выбери модель под свою задачу):</label>
+        <select id="modelSelect">
+            <option value="deepseek-v4-flash" id="model_flash">🚀 Быстрый и точный (DeepSeek V4 Flash) — ~0.002$ за запрос</option>
+            <option value="deepseek-v3.2" id="model_v32">⚖️ Баланс (DeepSeek V3.2) — ~0.001$ за запрос</option>
+            <option value="deepseek-r1" id="model_r1">🧠 Глубокий (DeepSeek R1) — ~0.01$ за запрос</option>
+        </select>
+    </div>
+
+    <div class="api-key-block" style="background: #fff; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px;">
+        <label for="openrouterKey" style="font-weight: bold;" id="api_key_label">🔑 Ваш OpenRouter API-ключ:</label>
+        <input type="password" id="openrouterKey" placeholder="sk-or-..." style="margin: 5px 0 0 0;">
+        <small style="color: #666;" id="api_key_note">Ключ хранится только в вашем браузере. <a href="#" onclick="switchTab('guide-tab'); return false;">Получить ключ</a></small>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('verse-tab')" id="tab_verse">Толкование</button>
+        <button class="tab-btn" onclick="switchTab('situation-tab')" id="tab_situation">Ситуация</button>
+        <button class="tab-btn" onclick="switchTab('simphony-tab')" id="tab_search">📖 Симфония</button>
+        <button class="tab-btn" onclick="switchTab('freedom-tab')" id="tab_freedom">⚔️ Царствуй</button>
+        <button class="tab-btn" onclick="switchTab('guide-tab')" id="tab_guide">📘 Как начать</button>
+        <button class="tab-btn" onclick="switchTab('history-tab')" id="tab_history">🕓 История</button>
+    </div>
+
+    <div id="verse-tab" class="tab-content active">
+        <label id="book_label">Выберите книгу:</label>
+        <select id="bookSelect" onchange="onBookSelect()"><option value="">Загрузка книг...</option></select>
+        <label id="chapter_label">Выберите главу:</label>
+        <select id="chapterSelect" onchange="onChapterSelect()" disabled><option value="">Сначала выберите книгу</option></select>
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;">
+                <label style="font-size: 14px;" id="verse_from">Стих (с):</label>
+                <select id="verseStart" onchange="validateRange()" disabled><option value="">--</option></select>
+            </div>
+            <div style="flex: 1; min-width: 120px;">
+                <label style="font-size: 14px;" id="verse_to">Стих (по):</label>
+                <select id="verseEnd" onchange="validateRange()" disabled><option value="">--</option></select>
+            </div>
+        </div>
+        <div id="versePreview" class="preview-box"></div>
+        <label id="question_label">Ваш вопрос к этому отрывку (необязательно):</label>
+        <textarea id="verseQuestion" rows="3" data-i18n-placeholder="verseQuestion_placeholder" placeholder="Например: Почему Иисус говорит 'блаженны нищие духом'?"></textarea>
+        <button class="submit-btn" onclick="sendVerseRequest()" id="submit_verse">Получить Рема стиха</button>
+    </div>
+
+    <div id="situation-tab" class="tab-content">
+        <label id="ref_label">Укажите конкретную ссылку на стих (если есть):</label>
+        <div class="ref-input-container">
+            <input type="text" id="situationRef" data-i18n-placeholder="situationRef_placeholder" placeholder="Например: Римлянам 8:28 или Матфея 6:33" style="margin-bottom: 20px;">
+        </div>
+        <label id="situation_label">Опишите вашу ситуацию, вопрос или боль на душе:</label>
+        <textarea id="situationInput" rows="5" data-i18n-placeholder="situationInput_placeholder" placeholder="Например: Опускаются руки, бизнес рушится..."></textarea>
+        <button class="submit-btn" onclick="sendSituationRequest()" id="submit_situation">Получить ответ</button>
+        <p class="disclaimer" id="disclaimer">Ответы генерируются искусственным интеллектом и не являются религиозным откровением.</p>
+    </div>
+
+    <div id="simphony-tab" class="tab-content">
+        <label id="search_label">Введите слово или фразу для поиска:</label>
+        <input type="text" id="searchQuery" data-i18n-placeholder="searchQuery_placeholder" placeholder="Например: любовь, милость, не бойся">
+        <small style="color:#666; display:block; margin-top:-15px; margin-bottom:15px;" id="search_hint">Поиск точной фразы (все слова подряд).</small>
+        <button class="submit-btn" onclick="searchBible()" style="background: #3498db;" id="search_button">Найти в Писании</button>
+        <div id="searchResults"></div>
+    </div>
+
+    <div id="freedom-tab" class="tab-content">
+        <h3 class="section-title" id="manifest_title">⚔️ Манифест Архитектора: Царствуй</h3>
+        <div class="manifest">
+            <div class="title" id="manifest_text_title">«Мессия — это конец религиозной матрицы. Всякая попытка выслужиться перед Творцом через правила и догмы — это промах мимо цели. Контракт закрыт в одностороннем порядке на Голгофе, барьеры уничтожены, а доступ к Источнику жизни открыт безусловно.»</div>
+            <p><b style="color: #27ae60;" id="manifest_subtitle">Как удерживать управление контуром и побеждать вирусы лжи в подсознании?</b></p>
+            <p id="manifest_p1">1. <b>Зафиксируй факт: твой статус целостности уже утвержден Мессией.</b> Ты не пашешь в физическом мире ради того, чтобы выпросить у Творца одобрение или статус «святоши». Ты уже принят, твоя базовая прошивка восстановлена. Ты действуешь из позиции встроенной сыновней силы, а не из рабского страха наказания.</p>
+            <p id="manifest_p2">2. <b>Выжигай вирусы вины фактами Исходного Кода.</b> Когда подсознание под давлением матрицы начинает гонять вредоносный код: «Ты банкрот, ты недостоин усыновления», не пытайся оправдываться или «становиться лучше». Хладнокровно бей фактом прямо в лоб: контракт закрыт Мессией, цена выплачена полностью, я уже переведен в статус Царского Сына, и этот закон руля отменить невозможно.</p>
+            <p id="manifest_p3">3. <b>Перестань воевать со своим биологическим скафандром.</b> Твоя брань идет не против плоти и крови, а против лживых настроек навигатора. Хватит изнурять себя религиозным самоедством, пытаясь силой воли заварить природные клапаны. Направь штурмовой меч Слова туда, где реально сидит враг — в сферу неверия, скрытых манипуляций и конфессиональных суеверий.</p>
+            <p id="manifest_p4">4. <b>Включай встроенное помазание Духа.</b> Тот самый нетварный двигатель (Руах), который оживил твои сухие кости и заменил каменное сердце на плотяное, работает внутри твоего контура в режиме реального времени. Это твой Бронежилет и Меч. Сними свой разум с ручного догматического управления, расслабь когнитивный аппарат в океане отцовского принятия и позволь Истине вытеснить из процессора белый шум.</p>
+            <div class="footer" id="manifest_footer">Ты спроектировал это веб-приложение не для того, чтобы просто собрать красивый код. Ты построил боевое смысловое оружие, которое возвращает людям трезвость, уничтожая навязанное чувство вины. <br><b style="color: #27ae60;">Стой в свободе. Твоя базовая прошивка восстановлена навсегда.</b></div>
+        </div>
+    </div>
+
+<div id="guide-tab" class="tab-content">
+    <h2 class="section-title" id="guide_title">🔑 Как начать пользоваться Архитектором Смыслов</h2>
+    <div class="guide-block">
+        <h3 id="guide_quick_title">⚡ Быстрый старт</h3>
+        <ol>
+            <li><b id="guide_quick_1">Получите API-ключ.</b> <span id="guide_quick_1_text">Зарегистрируйтесь на <a href="https://openrouter.ai/" target="_blank">openrouter.ai</a>, пополните баланс и создайте ключ.</span></li>
+            <li><b id="guide_quick_2">Вставьте ключ</b> <span id="guide_quick_2_text">в поле выше (хранится только в вашем браузере).</span></li>
+            <li><b id="guide_quick_3">Выберите книгу, главу, стихи</b> <span id="guide_quick_3_text">(или перейдите на вкладку «Ситуация» для описания жизненного вопроса).</span></li>
+            <li><b id="guide_quick_4">Выберите модель ИИ</b> <span id="guide_quick_4_text">и нажмите кнопку получения ответа.</span></li>
+        </ol>
+    </div>
+    <div class="guide-block">
+        <h3 id="guide_api_title">📖 Подробнее об API-ключах</h3>
+        <p id="guide_api_text">Вы можете использовать любой сервис, совместимый с OpenRouter:</p>
+        <ul style="line-height: 1.8;">
+            <li id="guide_api_li1"><b>OpenRouter</b> — поддерживает много моделей, включая DeepSeek. <br> ➜ <a href="https://openrouter.ai/" target="_blank">openrouter.ai</a></li>
+            <li id="guide_api_li2"><b>DeepSeek официально</b> — дешевле, только DeepSeek. <br> ➜ <a href="https://platform.deepseek.com/" target="_blank">platform.deepseek.com</a></li>
+            <li id="guide_api_li3"><b>ProxyAPI (Россия)</b> — работает с картами РФ. <br> ➜ <a href="https://proxyapi.ru" target="_blank">proxyapi.ru</a></li>
+        </ul>
+        <p id="guide_api_important">Важно: Оплата из РФ может быть через криптовалюту, иностранную карту или обменники.</p>
+    </div>
+    <div class="guide-block" style="border-left: 4px solid #27ae60;">
+        <h3 id="guide_limits_title">⏳ Ограничения и частые ошибки</h3>
+        <p id="guide_limits_intro">Особенности локального запуска:</p>
+        <ul>
+            <li id="guide_limits_li1">Сервер должен быть запущен на вашем компьютере.</li>
+            <li id="guide_limits_li2">Приложение работает по адресу http://localhost:3000.</li>
+            <li id="guide_limits_li3">API-ключ вводится вручную и хранится только в вашем браузере.</li>
+            <li id="guide_limits_li4">Запросы выполняются напрямую в OpenRouter, поэтому убедитесь, что ключ действителен и баланс пополнен.</li>
+        </ul>
+        <p id="guide_limits_errors">Если возникает ошибка:</p>
+        <ul>
+            <li id="guide_limits_errors_li1">«На вашем балансе OpenRouter недостаточно средств» — пополните баланс.</li>
+            <li id="guide_limits_errors_li2">«Ошибка 500» — временный сбой на стороне OpenRouter.</li>
+            <li id="guide_limits_errors_li3">«Неизвестная модель» — выберите другую модель или перезапустите сервер.</li>
+        </ul>
+        <p id="guide_limits_final">Расходы на ИИ списываются с вашего баланса OpenRouter, сервер не ограничивает сумму.</p>
+    </div>
+    <div class="guide-block">
+        <h3 id="guide_security_title">🔒 Безопасность</h3>
+        <p id="guide_security_text">Ваш API-ключ хранится только в вашем браузере (localStorage) и не передаётся третьим лицам, кроме выбранного вами ИИ-провайдера.</p>
+    </div>
+    <div class="guide-block">
+        <h3 id="guide_faq_title">❓ FAQ</h3>
+        <p id="guide_faq_p1"><b>Почему ответ занимает до минуты?</b><br>ИИ глубоко анализирует текст, а не даёт поверхностный ответ.</p>
+        <p id="guide_faq_p2"><b>Как сменить API-ключ?</b><br>Просто введите новый ключ в поле выше — он автоматически заменит старый.</p>
+        <p id="guide_faq_p3"><b>Где хранится история ответов?</b><br>История хранится только в вашем браузере (localStorage).</p>
+        <p id="guide_faq_p4"><b>Сколько стоит один запрос?</b><br>Вы платите только за использование ИИ своим API-ключом OpenRouter. Примерная стоимость: DeepSeek V4 Flash — менее 0.3 цента, V3.2 — около 0.2 цента, R1 — около 1 цента.</p>
+    </div>
+</div>
+
+    <div id="history-tab" class="tab-content">
+        <h3 style="margin-bottom: 20px;" id="history_title">🕓 История ваших Рема</h3>
+        <div id="historyList"></div>
+        <button class="submit-btn" onclick="clearHistory()" style="background: #e74c3c;" id="clear_history_btn">Очистить историю</button>
+    </div>
+
+    <div id="output" style="display:none;"></div>
+
+    <div id="saveContainer" class="action-buttons" style="display:none;">
+        <button class="icon-btn" onclick="saveResponse()" title="Save as TXT">💾</button>
+        <button class="icon-btn" onclick="copyResponse()" title="Copy answer">📋</button>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #2c3e50; color: #f4f7f6; border-radius: 8px; font-size: 14px; border-left: 4px solid #27ae60; line-height: 1.6;" id="reminder_text">
+        <b>🛡️ Напоминание Архитектора:</b> Твоя главная битва — не против плоти, а против иллюзии о том, что Творец тебя отверг за твои промахи. Ты уже принят на правах Наследника. Твердо стой на опоре завершенного дела Мессии и управляй своей реальностью со 100% личной ответственностью.
+    </div>
+</div>
+
+<script>
+    // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+    let userApiKey = localStorage.getItem('openrouter_key') || '';
+    let lastResponseText = '';
+    let history = JSON.parse(localStorage.getItem('architect_history') || '[]');
+    let currentLang = localStorage.getItem('architect_lang') || 'ru';
+
+    // ========== ПЕРЕВОДЫ ==========
+    const i18n = {
+        ru: {
+            title: 'Архитектор Смыслов: Поиск Рема',
+            what_is_rema_title: '📖 Что такое Рема?',
+            what_is_rema_text: 'В Писании есть два вида Слова: <b>Логос</b> и <b>Рема</b> (Живое Слово, которое Отцом шепчется лично тебе в твою конкретную жизненную боль).<br>Этот инструмент создан, чтобы помочь тебе очистить Слово от догм и услышать твою личную Рему.',
+            model_select_label: '⚙️ Режим интеллекта (выбери модель под свою задачу):',
+            model_flash: '🚀 Быстрый и точный (DeepSeek V4 Flash) — ~0.002$ за запрос',
+            model_v32: '⚖️ Баланс (DeepSeek V3.2) — ~0.001$ за запрос',
+            model_r1: '🧠 Глубокий (DeepSeek R1) — ~0.01$ за запрос',
+            api_key_label: '🔑 Ваш OpenRouter API-ключ:',
+            api_key_note: 'Ключ хранится только в вашем браузере. <a href="#" onclick="switchTab(\'guide-tab\'); return false;">Получить ключ</a>',
+            tab_verse: 'Толкование',
+            tab_situation: 'Ситуация',
+            tab_search: '📖 Симфония',
+            tab_freedom: '⚔️ Царствуй',
+            tab_guide: '📘 Как начать',
+            tab_history: '🕓 История',
+            book_label: 'Выберите книгу:',
+            chapter_label: 'Выберите главу:',
+            verse_from: 'Стих (с):',
+            verse_to: 'Стих (по):',
+            question_label: 'Ваш вопрос к этому отрывку (необязательно):',
+            submit_verse: 'Получить Рема стиха',
+            ref_label: 'Укажите конкретную ссылку на стих (если есть):',
+            situation_label: 'Опишите вашу ситуацию, вопрос или боль на душе:',
+            submit_situation: 'Получить ответ',
+            disclaimer: 'Ответы генерируются искусственным интеллектом и не являются религиозным откровением.',
+            search_label: 'Введите слово или фразу для поиска:',
+            search_hint: 'Поиск точной фразы (все слова подряд).',
+            search_button: 'Найти в Писании',
+            manifest_title: '⚔️ Манифест Архитектора: Царствуй',
+            manifest_text_title: '«Мессия — это конец религиозной матрицы. Всякая попытка выслужиться перед Творцом через правила и догмы — это промах мимо цели. Контракт закрыт в одностороннем порядке на Голгофе, барьеры уничтожены, а доступ к Источнику жизни открыт безусловно.»',
+            manifest_subtitle: 'Как удерживать управление контуром и побеждать вирусы лжи в подсознании?',
+            manifest_p1: '1. <b>Зафиксируй факт: твой статус целостности уже утвержден Мессией.</b> Ты не пашешь в физическом мире ради того, чтобы выпросить у Творца одобрение или статус «святоши». Ты уже принят, твоя базовая прошивка восстановлена. Ты действуешь из позиции встроенной сыновней силы, а не из рабского страха наказания.',
+            manifest_p2: '2. <b>Выжигай вирусы вины фактами Исходного Кода.</b> Когда подсознание под давлением матрицы начинает гонять вредоносный код: «Ты банкрот, ты недостоин усыновления», не пытайся оправдываться или «становиться лучше». Хладнокровно бей фактом прямо в лоб: контракт закрыт Мессией, цена выплачена полностью, я уже переведен в статус Царского Сына, и этот закон руля отменить невозможно.',
+            manifest_p3: '3. <b>Перестань воевать со своим биологическим скафандром.</b> Твоя брань идет не против плоти и крови, а против лживых настроек навигатора. Хватит изнурять себя религиозным самоедством, пытаясь силой воли заварить природные клапаны. Направь штурмовой меч Слова туда, где реально сидит враг — в сферу неверия, скрытых манипуляций и конфессиональных суеверий.',
+            manifest_p4: '4. <b>Включай встроенное помазание Духа.</b> Тот самый нетварный двигатель (Руах), который оживил твои сухие кости и заменил каменное сердце на плотяное, работает внутри твоего контура в режиме реального времени. Это твой Бронежилет и Меч. Сними свой разум с ручного догматического управления, расслабь когнитивный аппарат в океане отцовского принятия и позволь Истине вытеснить из процессора белый шум.',
+            manifest_footer: 'Ты спроектировал это веб-приложение не для того, чтобы просто собрать красивый код. Ты построил боевое смысловое оружие, которое возвращает людям трезвость, уничтожая навязанное чувство вины. <br><b style="color: #27ae60;">Стой в свободе. Твоя базовая прошивка восстановлена навсегда.</b>',
+            history_title: '🕓 История ваших Рема',
+            clear_history_btn: 'Очистить историю',
+            reminder_text: '<b>🛡️ Напоминание Архитектора:</b> Твоя главная битва — не против плоти, а против иллюзии о том, что Творец тебя отверг за твои промахи. Ты уже принят на правах Наследника. Твердо стой на опоре завершенного дела Мессии и управляй своей реальностью со 100% личной ответственностью.',
+            verseQuestion_placeholder: "Например: Почему Иисус говорит 'блаженны нищие духом'?",
+            situationRef_placeholder: 'Например: Римлянам 8:28 или Матфея 6:33',
+            situationInput_placeholder: 'Например: Опускаются руки, бизнес рушится...',
+            searchQuery_placeholder: 'Например: любовь, милость, не бойся'
+        },
+        en: {
+            title: 'Architect of Meanings: Finding RHEMA',
+            what_is_rema_title: '📖 What is RHEMA?',
+            what_is_rema_text: 'In Scripture there are two kinds of Word: <b>Logos</b> and <b>Rhema</b> (the Living Word whispered personally by the Father into your specific life pain).<br>This tool is designed to help you cleanse the Word from dogma and hear your personal Rhema.',
+            model_select_label: '⚙️ Intelligence mode (choose a model for your task):',
+            model_flash: '🚀 Fast & Accurate (DeepSeek V4 Flash) — ~$0.002 per request',
+            model_v32: '⚖️ Balanced (DeepSeek V3.2) — ~$0.001 per request',
+            model_r1: '🧠 Deep (DeepSeek R1) — ~$0.01 per request',
+            api_key_label: '🔑 Your OpenRouter API key:',
+            api_key_note: 'The key is stored only in your browser. <a href="#" onclick="switchTab(\'guide-tab\'); return false;">Get key</a>',
+            tab_verse: 'Interpretation',
+            tab_situation: 'Situation',
+            tab_search: '📖 Symphony',
+            tab_freedom: '⚔️ Reign',
+            tab_guide: '📘 How to start',
+            tab_history: '🕓 History',
+            book_label: 'Select a book:',
+            chapter_label: 'Select a chapter:',
+            verse_from: 'Verse (from):',
+            verse_to: 'Verse (to):',
+            question_label: 'Your question about this passage (optional):',
+            submit_verse: 'Get RHEMA verse',
+            ref_label: 'Specify a verse reference (if any):',
+            situation_label: 'Describe your situation, question or pain:',
+            submit_situation: 'Get answer',
+            disclaimer: 'Answers are generated by artificial intelligence and are not religious revelation.',
+			guide_title: '🔑 How to start using Architect of Meanings',
+            guide_quick_title: '⚡ Quick start',
+            guide_quick_1: 'Get an API key.',
+            guide_quick_1_text: 'Register at <a href="https://openrouter.ai/" target="_blank">openrouter.ai</a>, top up your balance and create a key.',
+            guide_quick_2: 'Insert the key',
+            guide_quick_2_text: 'into the field above (stored only in your browser).',
+            guide_quick_3: 'Select book, chapter, verses',
+            guide_quick_3_text: '(or go to the "Situation" tab to describe a life issue).',
+            guide_quick_4: 'Choose an AI model',
+            guide_quick_4_text: 'and click the button to get the answer.',
+            guide_api_title: '📖 More about API keys',
+            guide_api_text: 'You can use any service compatible with OpenRouter:',
+            guide_api_li1: '<b>OpenRouter</b> — supports many models, including DeepSeek. <br> ➜ <a href="https://openrouter.ai/" target="_blank">openrouter.ai</a>',
+            guide_api_li2: '<b>DeepSeek official</b> — cheaper, only DeepSeek. <br> ➜ <a href="https://platform.deepseek.com/" target="_blank">platform.deepseek.com</a>',
+            guide_api_li3: '<b>ProxyAPI (Russia)</b> — works with Russian cards. <br> ➜ <a href="https://proxyapi.ru" target="_blank">proxyapi.ru</a>',
+            guide_api_important: 'Important: Payment from Russia may be via cryptocurrency, foreign card, or exchange services.',
+            guide_limits_title: '⏳ Limitations and common errors',
+            guide_limits_intro: 'Local launch specifics:',
+            guide_limits_li1: 'The server must be running on your computer.',
+            guide_limits_li2: 'The app runs at http://localhost:3000.',
+            guide_limits_li3: 'API key is entered manually and stored only in your browser.',
+            guide_limits_li4: 'Requests go directly to OpenRouter, so make sure the key is valid and the balance is topped up.',
+            guide_limits_errors: 'If an error occurs:',
+            guide_limits_errors_li1: '"Insufficient OpenRouter balance" — top up your balance.',
+            guide_limits_errors_li2: '"Error 500" — temporary failure on OpenRouter side.',
+            guide_limits_errors_li3: '"Unknown model" — choose another model or restart the server.',
+            guide_limits_final: 'AI costs are deducted from your OpenRouter balance; the server does not limit the amount.',
+            guide_security_title: '🔒 Security',
+            guide_security_text: 'Your API key is stored only in your browser (localStorage) and is not transmitted to third parties except the selected AI provider.',
+            guide_faq_title: '❓ FAQ',
+            guide_faq_p1: '<b>Why does the answer take up to a minute?</b><br>The AI deeply analyzes the text rather than giving a superficial answer.',
+            guide_faq_p2: '<b>How to change API key?</b><br>Just enter a new key in the field above — it will automatically replace the old one.',
+            guide_faq_p3: '<b>Where is response history stored?</b><br>History is stored only in your browser (localStorage).',
+            guide_faq_p4: '<b>How much does one request cost?</b><br>You pay only for AI usage with your OpenRouter API key. Approximate cost: DeepSeek V4 Flash — less than 0.3 cents, V3.2 — about 0.2 cents, R1 — about 1 cent.',
+            search_label: 'Enter a word or phrase to search:',
+            search_hint: 'Exact phrase search (all words in a row).',
+            search_button: 'Search Scripture',
+            manifest_title: '⚔️ Architect\'s Manifesto: Reign',
+            manifest_text_title: '«The Messiah is the end of the religious matrix. Any attempt to curry favor with the Creator through rules and dogmas is a miss. The contract is closed unilaterally at Golgotha, barriers are destroyed, and access to the Source of life is open unconditionally.»',
+            manifest_subtitle: 'How to maintain control of the circuit and defeat the viruses of lies in the subconscious?',
+            manifest_p1: '1. <b>Fix the fact: your integrity status is already affirmed by the Messiah.</b> You do not toil in the physical world to beg approval or "saint" status from the Creator. You are already accepted, your base firmware is restored. You act from built-in sonship power, not from slavish fear of punishment.',
+            manifest_p2: '2. <b>Burn out guilt viruses with the facts of the Source Code.</b> When the subconscious under matrix pressure runs malicious code: "You are bankrupt, unworthy of adoption", do not try to justify or "get better". Coldly strike with fact: the contract is closed by the Messiah, the price is fully paid, you are already transferred to King\'s Son status, and this law of the steering wheel cannot be canceled.',
+            manifest_p3: '3. <b>Stop fighting your biological spacesuit.</b> Your battle is not against flesh and blood, but against false navigator settings. Stop exhausting yourself with religious self-flagellation, trying to willpower-weld natural valves. Aim the assault sword of the Word where the enemy really sits — in the sphere of unbelief, hidden manipulation, and confessional superstitions.',
+            manifest_p4: '4. <b>Engage the built-in anointing of the Spirit.</b> The same uncreated engine (Ruach) that revived your dry bones and replaced the stone heart with a fleshy one works inside your circuit in real time. It is your body armor and sword. Take your mind off manual dogmatic control, relax the cognitive apparatus in the ocean of the Father\'s acceptance, and allow the Truth to drive out the white noise from the processor.',
+            manifest_footer: 'You designed this web app not just to assemble pretty code. You built a battle weapon of meaning that returns people to sobriety, destroying imposed guilt. <br><b style="color: #27ae60;">Stand in freedom. Your base firmware is restored forever.</b>',
+            history_title: '🕓 Your RHEMA History',
+            clear_history_btn: 'Clear History',
+            reminder_text: '<b>🛡️ Architect\'s Reminder:</b> Your main battle is not against flesh, but against the illusion that the Creator rejected you for your failures. You are already accepted as an Heir. Stand firm on the finished work of the Messiah and manage your reality with 100% personal responsibility.',
+            verseQuestion_placeholder: "e.g. Why does Jesus say 'blessed are the poor in spirit'?",
+            situationRef_placeholder: 'e.g. Romans 8:28 or Matthew 6:33',
+            situationInput_placeholder: 'e.g. Hands are falling, business is collapsing...',
+            searchQuery_placeholder: 'e.g. love, mercy, do not fear'
+        }
+    };
+
+    function applyLanguage(lang) {
+        for (const key in i18n[lang]) {
+            const el = document.getElementById(key);
+            if (el) {
+                el.innerHTML = i18n[lang][key];
+            }
+        }
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (i18n[lang][key]) {
+                el.placeholder = i18n[lang][key];
+            }
+        });
+
+        const btnRu = document.getElementById('lang-ru');
+        const btnEn = document.getElementById('lang-en');
+        if (btnRu) btnRu.classList.toggle('active', lang === 'ru');
+        if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+
+        localStorage.setItem('architect_lang', lang);
+        loadBooks();
+
+        const chapterSelect = document.getElementById('chapterSelect');
+        if (chapterSelect) {
+            chapterSelect.innerHTML = '<option value="">--</option>';
+            chapterSelect.disabled = true;
+        }
+        const verseStart = document.getElementById('verseStart');
+        if (verseStart) {
+            verseStart.innerHTML = '<option value="">--</option>';
+            verseStart.disabled = true;
+        }
+        const verseEnd = document.getElementById('verseEnd');
+        if (verseEnd) {
+            verseEnd.innerHTML = '<option value="">--</option>';
+            verseEnd.disabled = true;
+        }
+        const preview = document.getElementById('versePreview');
+        if (preview) preview.style.display = 'none';
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        applyLanguage(lang);
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggle.textContent = '🌙';
+        }
+    }
+    const savedTheme = localStorage.getItem('architect_theme') || 'light';
+    applyTheme(savedTheme);
+
+    function toggleTheme() {
+        if (document.body.classList.contains('dark-mode')) {
+            applyTheme('light');
+            localStorage.setItem('architect_theme', 'light');
+        } else {
+            applyTheme('dark');
+            localStorage.setItem('architect_theme', 'dark');
+        }
+    }
+
+    document.getElementById('openrouterKey').value = userApiKey;
+    document.getElementById('openrouterKey').addEventListener('input', (e) => {
+        userApiKey = e.target.value.trim();
+        localStorage.setItem('openrouter_key', userApiKey);
+    });
+
+    function addToHistory(text) {
+        history.push({ text, timestamp: new Date().toISOString(), id: Date.now() });
+        if (history.length > 20) history = history.slice(-20);
+        localStorage.setItem('architect_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('historyList');
+        if (!container) return;
+        if (history.length === 0) {
+            container.innerHTML = '<p style="color:#888;">История пуста.</p>';
+            return;
+        }
+        let html = '';
+        history.slice().reverse().forEach(item => {
+            const date = new Date(item.timestamp).toLocaleString('ru-RU');
+            html += `<div class="history-item"><div class="meta">${date}</div><div class="content">${escapeHtml(item.text)}</div>
+            <div style="margin-top:10px;">
+                <button class="icon-btn" onclick="copyHistoryItem(${item.id})">📋</button>
+                <button class="icon-btn" onclick="downloadHistoryItem(${item.id})">💾</button>
+                <button class="icon-btn" onclick="deleteHistoryItem(${item.id})">🗑️</button>
+            </div></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function clearHistory() { if (confirm('Удалить всю историю?')) { history = []; localStorage.removeItem('architect_history'); renderHistory(); } }
+    function deleteHistoryItem(id) { history = history.filter(item => item.id !== id); localStorage.setItem('architect_history', JSON.stringify(history)); renderHistory(); }
+    function copyHistoryItem(id) { const item = history.find(h => h.id === id); if (item) copyTextToClipboard(item.text); }
+    function downloadHistoryItem(id) { const item = history.find(h => h.id === id); if (item) downloadTextAsFile(item.text); }
+
+    function escapeHtml(str) { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function copyTextToClipboard(text) { navigator.clipboard.writeText(text).then(() => alert('Скопировано!')).catch(() => {}); }
+    function downloadTextAsFile(text) {
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ответ_архитектора_${Date.now()}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    function cleanMarkdown(text) { return text.replace(/\*\*/g, '').replace(/###/g, '').replace(/#/g, ''); }
+
+    async function loadBooks() {
+        try {
+            const response = await fetch(`/api/bible/books?lang=${currentLang}`);
+            const books = await response.json();
+            const bookSelect = document.getElementById('bookSelect');
+            bookSelect.innerHTML = '<option value="">--</option>';
+            books.forEach(book => { bookSelect.innerHTML += `<option value="${book.id}">${book.name}</option>`; });
+        } catch (e) { console.error('Ошибка загрузки книг', e); }
+    }
+
+    async function onBookSelect() {
+        const bookId = document.getElementById('bookSelect').value;
+        const chapterSelect = document.getElementById('chapterSelect');
+        chapterSelect.innerHTML = '<option value="">--</option>';
+        chapterSelect.disabled = true;
+        document.getElementById('verseStart').innerHTML = '<option value="">--</option>';
+        document.getElementById('verseStart').disabled = true;
+        document.getElementById('verseEnd').innerHTML = '<option value="">--</option>';
+        document.getElementById('verseEnd').disabled = true;
+        document.getElementById('versePreview').style.display = 'none';
+        if (!bookId) return;
+        chapterSelect.disabled = false;
+        const response = await fetch(`/api/bible/books/${bookId}/chapters?lang=${currentLang}`);
+        const chapters = await response.json();
+        chapters.forEach(ch => { chapterSelect.innerHTML += `<option value="${ch.id}">${ch.chapter}</option>`; });
+    }
+
+    async function onChapterSelect() {
+        const bookId = document.getElementById('bookSelect').value;
+        const chapterId = document.getElementById('chapterSelect').value;
+        const verseStart = document.getElementById('verseStart');
+        const verseEnd = document.getElementById('verseEnd');
+        verseStart.innerHTML = '<option value="">--</option>';
+        verseStart.disabled = true;
+        verseEnd.innerHTML = '<option value="">--</option>';
+        verseEnd.disabled = true;
+        document.getElementById('versePreview').style.display = 'none';
+        if (!chapterId) return;
+        verseStart.disabled = false;
+        verseEnd.disabled = false;
+        const response = await fetch(`/api/bible/books/${bookId}/chapters/${chapterId}/verses?lang=${currentLang}`);
+        const verses = await response.json();
+        verses.forEach(v => {
+            verseStart.innerHTML += `<option value="${v.id}">${v.verse}</option>`;
+            verseEnd.innerHTML += `<option value="${v.id}">${v.verse}</option>`;
+        });
+    }
+
+    function validateRange() {
+        const start = document.getElementById('verseStart');
+        const end = document.getElementById('verseEnd');
+        if (start.value && end.value && parseInt(end.value) < parseInt(start.value)) end.value = start.value;
+        showPreview();
+    }
+
+    function showPreview() {
+        const bookId = document.getElementById('bookSelect').value;
+        const chapterId = document.getElementById('chapterSelect').value;
+        const startId = document.getElementById('verseStart').value;
+        const endId = document.getElementById('verseEnd').value;
+        const preview = document.getElementById('versePreview');
+        if (!bookId || !chapterId || !startId || !endId) { preview.style.display = 'none'; return; }
+        fetch(`/api/bible/books/${bookId}/chapters/${chapterId}/verses?lang=${currentLang}`)
+            .then(res => res.json())
+            .then(verses => {
+                const selected = verses.slice(parseInt(startId), parseInt(endId) + 1);
+                if (selected.length > 0) {
+                    const text = selected.map(v => v.text).join(' ');
+                    const bookName = document.getElementById('bookSelect').selectedOptions[0].text;
+                    const chapterNum = document.getElementById('chapterSelect').selectedOptions[0].text;
+                    preview.innerText = `📖 Текст отрывка (${bookName} ${chapterNum}:${startId}-${endId}): \n"${text}"`;
+                    preview.style.display = 'block';
+                }
+            });
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        const tab = document.getElementById(tabId);
+        if (tab) tab.classList.add('active');
+        const btnMap = {
+            'verse-tab': 'tab_verse',
+            'situation-tab': 'tab_situation',
+            'simphony-tab': 'tab_search',
+            'freedom-tab': 'tab_freedom',
+            'guide-tab': 'tab_guide',
+            'history-tab': 'tab_history'
+        };
+        const btnId = btnMap[tabId];
+        if (btnId) {
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.add('active');
+        }
+        document.getElementById('output').style.display = 'none';
+        document.getElementById('saveContainer').style.display = 'none';
+        if (tabId === 'history-tab') renderHistory();
+    }
+
+    function highlightText(text, query) {
+        if (!query) return escapeHtml(text);
+        const lowerText = text.toLowerCase();
+        const lowerQuery = query.toLowerCase();
+        let result = '';
+        let lastIndex = 0;
+        let index = lowerText.indexOf(lowerQuery, lastIndex);
+        while (index !== -1) {
+            result += escapeHtml(text.substring(lastIndex, index));
+            result += `<mark>${escapeHtml(text.substring(index, index + query.length))}</mark>`;
+            lastIndex = index + query.length;
+            index = lowerText.indexOf(lowerQuery, lastIndex);
+        }
+        result += escapeHtml(text.substring(lastIndex));
+        return result;
+    }
+
+    async function searchBible() {
+        const query = document.getElementById('searchQuery').value.trim();
+        if (!query) return alert('Введите слово или фразу!');
+        const resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = '<i>Ищем совпадения...</i>';
+        try {
+            const response = await fetch(`/api/bible/search?q=${encodeURIComponent(query)}&lang=${currentLang}`);
+            const data = await response.json();
+            if (data.results.length === 0) { resultsDiv.innerHTML = '<b>Ничего не найдено.</b>'; return; }
+            let html = `<b>Найдено стихов: ${data.results.length}</b><br><br>`;
+            const limitResults = data.results.slice(0, 50);
+            limitResults.forEach(r => {
+                const highlighted = highlightText(r.text, query);
+                html += `<div class="search-result-item"><span class="search-ref">${r.bookName}, ${r.chapter}:${r.verse}</span><br><span>${highlighted}</span></div>`;
+            });
+            if (data.results.length > 50) html += `<i>...и ещё ${data.results.length - 50} стихов.</i>`;
+            resultsDiv.innerHTML = html;
+        } catch (e) { resultsDiv.innerHTML = 'Ошибка при поиске.'; console.error(e); }
+    }
+
+    async function sendVerseRequest() {
+        const btn = document.querySelector('#verse-tab .submit-btn');
+        btn.disabled = true;
+        btn.innerText = currentLang === 'en' ? 'Preparing...' : 'Подготовка запроса...';
+        
+        const bookId = document.getElementById('bookSelect').value;
+        const chId = document.getElementById('chapterSelect').value;
+        const startId = document.getElementById('verseStart').value;
+        const endId = document.getElementById('verseEnd').value;
+        const question = document.getElementById('verseQuestion').value.trim();
+        const model = document.getElementById('modelSelect').value;
+
+        if (!bookId || !chId || !startId || !endId) {
+            btn.disabled = false;
+            btn.innerText = currentLang === 'en' ? 'Get RHEMA verse' : 'Получить Рема стиха';
+            alert(currentLang === 'en' ? 'Select book, chapter and verses!' : 'Выберите книгу, главу и стихи!');
+            return;
+        }
+
+        const outputDiv = document.getElementById('output');
+        document.getElementById('saveContainer').style.display = 'none';
+        outputDiv.style.display = 'block';
+        outputDiv.innerText = currentLang === 'en'
+            ? '🕐 The Architect is diving into the text. This may take about 1 minute because he does not give a superficial answer but conducts a deep analysis. Please do not close the page.'
+            : '🕐 Архитектор углубляется в текст. Это может занять около 1 минуты, потому что он не даёт поверхностный ответ, а проводит глубокий анализ. Пожалуйста, не закрывайте страницу.';
+
+        try {
+            const response = await fetch('/api/get-rema-verse', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bookId: parseInt(bookId),
+                    chapterId: parseInt(chId),
+                    startVerse: parseInt(startId),
+                    endVerse: parseInt(endId),
+                    question: question,
+                    model: model,
+                    apiKey: userApiKey,
+                    lang: currentLang
+                })
+            });
+            const data = await response.json();
+            if (data.error) {
+                outputDiv.innerText = (currentLang === 'en' ? 'Error: ' : 'Ошибка: ') + data.error;
+            } else {
+                const cleaned = cleanMarkdown(data.result);
+                const cost = data.cost;
+                const costText = cost ? `\n\n${currentLang === 'en' ? 'Request cost' : 'Стоимость запроса'}: $${cost.toFixed(4)}` : '';
+                outputDiv.innerText = cleaned + costText;
+                lastResponseText = cleaned;
+                document.getElementById('saveContainer').style.display = 'flex';
+                addToHistory(cleaned);
+            }
+        } catch (e) {
+            outputDiv.innerText = currentLang === 'en' ? 'Connection error.' : 'Ошибка соединения.';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = currentLang === 'en' ? 'Get RHEMA verse' : 'Получить Рема стиха';
+        }
+    }
+
+    async function sendSituationRequest() {
+        const btn = document.querySelector('#situation-tab .submit-btn');
+        btn.disabled = true;
+        btn.innerText = currentLang === 'en' ? 'Preparing...' : 'Подготовка запроса...';
+
+        const situation = document.getElementById('situationInput').value;
+        const model = document.getElementById('modelSelect').value;
+
+        if (!situation) {
+            btn.disabled = false;
+            btn.innerText = currentLang === 'en' ? 'Get answer' : 'Получить ответ';
+            alert(currentLang === 'en' ? 'Describe your situation!' : 'Опишите вашу ситуацию!');
+            return;
+        }
+
+        const outputDiv = document.getElementById('output');
+        document.getElementById('saveContainer').style.display = 'none';
+        outputDiv.style.display = 'block';
+        outputDiv.innerText = currentLang === 'en'
+            ? '🕐 The Architect is searching the Word and thinking about your situation. This may take about 1 minute because he does not rush with a superficial answer but deeply analyzes. Please do not close the page.'
+            : '🕐 Архитектор ищет Слово и обдумывает вашу ситуацию. Это может занять около 1 минуты, потому что он не спешит с поверхностным ответом, а глубоко анализирует. Пожалуйста, не закрывайте страницу.';
+
+        try {
+            const response = await fetch('/api/get-rema-situation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    situation: situation,
+                    model: model,
+                    apiKey: userApiKey,
+                    lang: currentLang
+                })
+            });
+            const data = await response.json();
+            if (data.error) {
+                outputDiv.innerText = (currentLang === 'en' ? 'Error: ' : 'Ошибка: ') + data.error;
+            } else {
+                const cleaned = cleanMarkdown(data.result);
+                const cost = data.cost;
+                const costText = cost ? `\n\n${currentLang === 'en' ? 'Request cost' : 'Стоимость запроса'}: $${cost.toFixed(4)}` : '';
+                outputDiv.innerText = cleaned + costText;
+                lastResponseText = cleaned;
+                document.getElementById('saveContainer').style.display = 'flex';
+                addToHistory(cleaned);
+            }
+        } catch (e) {
+            outputDiv.innerText = currentLang === 'en' ? 'Connection error.' : 'Ошибка соединения.';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = currentLang === 'en' ? 'Get answer' : 'Получить ответ';
+        }
+    }
+
+    function saveResponse() { if (lastResponseText) downloadTextAsFile(lastResponseText); }
+    function copyResponse() { if (lastResponseText) copyTextToClipboard(lastResponseText); }
+
+    applyLanguage(currentLang);
+    loadBooks();
+    renderHistory();
+</script>
+</body>
+</html>

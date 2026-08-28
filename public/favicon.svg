@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Пергаментный фон -->
+  <rect x="20" y="25" width="60" height="50" rx="5" fill="#f5e7c8" stroke="#8b5a2b" stroke-width="3"/>
+  <!-- Верхний валик -->
+  <rect x="16" y="20" width="68" height="10" rx="5" fill="#c49a6c" stroke="#8b5a2b" stroke-width="2"/>
+  <!-- Нижний валик -->
+  <rect x="16" y="70" width="68" height="10" rx="5" fill="#c49a6c" stroke="#8b5a2b" stroke-width="2"/>
+  <!-- Линии текста -->
+  <line x1="28" y1="38" x2="72" y2="38" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="46" x2="72" y2="46" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="54" x2="60" y2="54" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round"/>
+  <!-- Буква "П" как писание -->
+  <text x="30" y="30" font-family="serif" font-size="12" fill="#8b5a2b" font-weight="bold">📜</text>
+</svg>

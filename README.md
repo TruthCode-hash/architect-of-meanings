@@ -2,6 +2,9 @@
 
 **Architect of Meanings** is a local web application for deep analysis of biblical texts using artificial intelligence. It works through OpenRouter and supports three DeepSeek models: V4 Flash, V3.2, and R1.
 
+![Главный экран приложения](screenshots/Screenshot_258.png)
+*The Architect of Meanings Home Screen*
+
 ## 🚀 Quick Start (for Windows, macOS, Linux)
 
 ### 1. Install Node.js

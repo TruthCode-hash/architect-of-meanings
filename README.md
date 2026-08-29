@@ -2,9 +2,7 @@
 > **Программа полностью двуязычная (РУС / ENG) и имеет встроенный переключатель интерфейса на русский язык.**
 > 
 > 👉 **[НАЖМИ СЮДА, ЧТОБЫ ЧИТАТЬ ИНСТРУКЦИЮ НА РУССКОМ](./README-RU.md)**
-
 ---
-
 # 📖 Architect of Meanings — Launch Instructions
 
 **Architect of Meanings** is a local web application for deep analysis of biblical texts using artificial intelligence. It works through OpenRouter and supports three DeepSeek models: V4 Flash, V3.2, and R1.

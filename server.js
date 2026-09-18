@@ -96,7 +96,7 @@ const AI_PROVIDERS = {
         temperature: 0.4,
         top_p: 0.9,
         max_tokens: 16384,
-        reasoning: { enabled: false }
+        reasoning: { enabled: true, max_tokens: 5000 }
     },
     'deepseek-v4-flash': {
         url: 'https://openrouter.ai/api/v1/chat/completions',
@@ -104,7 +104,7 @@ const AI_PROVIDERS = {
         temperature: 0.4,
         top_p: 0.9,
         max_tokens: 16384,
-        reasoning: { enabled: true, max_tokens: 5000 }
+        reasoning: { enabled: false }
     },
     'deepseek-r1': {
         url: 'https://openrouter.ai/api/v1/chat/completions',
